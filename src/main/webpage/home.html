@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <h1>Produtos da Gubee</h1>
+    <fieldset>
+        <legend>Filtro de Busca</legend>
+        <fieldset>
+            <legend>Mercado Alvo</legend>
+
+            <div>
+                <input type="radio" id="mobile" name="mercadoAlvo" value="Mobile" checked/> Mobile<br />
+                <input type="radio" id="desktop" name="mercadoAlvo" value="Desktop"/> Desktop<br />
+                <input type="radio" id="web" name="mercadoAlvo" value="Web"/> Web<br />
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Tecnologias</legend>
+
+            <div>
+                <input type="checkbox" id="java" name="Java">
+                <label for="java">Java</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="kotlin" name="Kotlin">
+                <label for="kotlin">Kotlin</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="angular" name="Angular">
+                <label for="kotlin">Angular</label>
+            </div>
+        </fieldset>
+        <button onclick="buscaFiltraDb()">Buscar</button>
+    </fieldset>
+    <fieldset>
+        <table id="tabela-produtos">
+            <thead>
+            <tr>
+                <th>Nome |</th>
+                <th>Descricao |</th>
+                <th>Mercado Alvo |</th>
+                <th>Tecnologias</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </fieldset>
+
+    <script>
+        function buscaFiltraDb() {
+            const tabela = document.getElementById('tabela-produtos');
+            const tbody = tabela.getElementsByTagName('tbody')[0] || tabela;
+
+            while(tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+
+            var mercadoAlvo = document.querySelector('input[name="mercadoAlvo"]:checked')?.value;
+            var tecnologias = [];
+            var tecnologiasSelecionadas = document.querySelectorAll('input[type=checkbox]:checked');
+            for (var i = 0; i < tecnologiasSelecionadas.length; i++) {
+                tecnologias.push(tecnologiasSelecionadas[i].name);
+            }
+            var tecnologiasString = tecnologias.toString();
+
+            fetch('http://localhost:8080/TesteBis2Bis-1.0-SNAPSHOT/api/produto/filtro?tecnologias=' + tecnologiasString + '&mercadoAlvo=' + mercadoAlvo.toString())
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#tabela-produtos tbody');
+                    data.forEach(dado => {
+                        const tr = document.createElement('tr');
+                        const tdNome = document.createElement("td");
+                        tdNome.textContent = dado.nome + ' |';
+                        const tdDescricao = document.createElement('td');
+                        tdDescricao.textContent = dado.descricao + ' |';
+                        const tdMercadoAlvo = document.createElement('td');
+                        tdMercadoAlvo.textContent = dado.mercadoAlvo + ' |';
+                        const tdTecnologias = document.createElement('td');
+                        tdTecnologias.textContent = dado.tecnologias + ' |';
+                        tr.appendChild(tdNome);
+                        tr.appendChild(tdDescricao);
+                        tr.appendChild(tdMercadoAlvo);
+                        tr.appendChild(tdTecnologias);
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+
+        function buscaAllDb() {
+            fetch('http://localhost:8080/TesteBis2Bis-1.0-SNAPSHOT/api/produto/all')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#tabela-produtos tbody');
+                    data.forEach(dado => {
+                        const tr = document.createElement('tr');
+                        const tdNome = document.createElement("td");
+                        tdNome.textContent = dado.nome + ' |';
+                        const tdDescricao = document.createElement('td');
+                        tdDescricao.textContent = dado.descricao + ' |';
+                        const tdMercadoAlvo = document.createElement('td');
+                        tdMercadoAlvo.textContent = dado.mercadoAlvo + ' |';
+                        const tdTecnologias = document.createElement('td');
+                        tdTecnologias.textContent = dado.tecnologias + ' |';
+                        tr.appendChild(tdNome);
+                        tr.appendChild(tdDescricao);
+                        tr.appendChild(tdMercadoAlvo);
+                        tr.appendChild(tdTecnologias);
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+        window.onload(buscaAllDb());
+    </script>
+</html>
+
